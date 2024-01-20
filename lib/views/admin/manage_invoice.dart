@@ -5,8 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 
-class ManageCourse extends StatelessWidget {
-  const ManageCourse({super.key});
+class ManageInvoice extends StatelessWidget {
+  const ManageInvoice({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,20 +14,6 @@ class ManageCourse extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final adminCourseController = Provider.of<UserController>(context);
     return Scaffold(
-      // appBar: AppBar(
-      //   automaticallyImplyLeading: false,
-      //   leading: IconButton(
-      //     onPressed: () {
-      //       Navigator.of(context).pop();
-      //     },
-      //     icon: const Icon(EvaIcons.arrow_ios_back_outline),
-      //   ),
-      //   centerTitle: true,
-      //   title: Text(
-      //     'Manage Courses',
-      //     style: GoogleFonts.epilogue(),
-      //   ),
-      // ),
       body: Stack(
         children: [
           ////////////////////////////////////////////////////////
@@ -60,7 +46,7 @@ class ManageCourse extends StatelessWidget {
                         width: 20,
                       ),
                       Text(
-                        'Manage All Courses',
+                        'Manage Invoice',
                         style: GoogleFonts.epilogue(
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
@@ -74,7 +60,7 @@ class ManageCourse extends StatelessWidget {
                   width: width,
                   height: 50,
                   child: Text(
-                    'All Courses',
+                    'Upcoming Invoice:',
                     style: GoogleFonts.epilogue(
                         fontSize: 20, fontWeight: FontWeight.w500),
                   ),

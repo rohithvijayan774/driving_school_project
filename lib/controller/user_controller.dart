@@ -1,6 +1,7 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:driving_school/views/admin/manage_course.dart';
 import 'package:driving_school/views/admin/manage_instructor.dart';
+import 'package:driving_school/views/admin/manage_invoice.dart';
 import 'package:driving_school/views/admin/users_list.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -21,7 +22,7 @@ class UserController extends ChangeNotifier {
     {
       'service name': 'Manage Invoice',
       'image': 'assets/taxation 1.png',
-      'onTap': 'const UsersList()'
+      'onTap': const ManageInvoice(),
     },
     {
       'service name': 'Manage Instructor',
