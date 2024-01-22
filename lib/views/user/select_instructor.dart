@@ -6,8 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 
-class ManageInstructor extends StatelessWidget {
-  const ManageInstructor({super.key});
+class ChooseInstructor extends StatelessWidget {
+  const ChooseInstructor({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class ManageInstructor extends StatelessWidget {
                     width: 20,
                   ),
                   Text(
-                    'Manage Instructor',
+                    'Select Instructor',
                     style: GoogleFonts.epilogue(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -51,7 +51,7 @@ class ManageInstructor extends StatelessWidget {
               width: width,
               height: 50,
               child: Text(
-                'Our Instructors',
+                'Our all Instructors',
                 style: GoogleFonts.epilogue(
                     fontSize: 20, fontWeight: FontWeight.w500),
               ),
@@ -93,9 +93,20 @@ class ManageInstructor extends StatelessWidget {
                             style: GoogleFonts.epilogue(
                                 fontWeight: FontWeight.w500, fontSize: 18),
                           ),
-                          IconButton.outlined(
-                            onPressed: () {},
-                            icon: const Icon(Icons.call),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: TextButton(
+                                  onPressed: () {},
+                                  child: const Text('Select'),
+                                ),
+                              ),
+                              IconButton.outlined(
+                                onPressed: () {},
+                                icon: const Icon(Icons.call),
+                              ),
+                            ],
                           ),
                         ],
                       )),
@@ -105,21 +116,6 @@ class ManageInstructor extends StatelessWidget {
               ),
             )
           ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const AddInstructor(),
-            ),
-          );
-        },
-        shape: const CircleBorder(),
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
         ),
       ),
     );

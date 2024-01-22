@@ -1,6 +1,7 @@
 import 'package:driving_school/const.dart';
 import 'package:driving_school/controller/user_controller.dart';
 import 'package:driving_school/views/admin/admin_home.dart';
+import 'package:driving_school/views/user/user_home.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -13,7 +14,7 @@ class OTPVerification extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
+    // final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Column(
@@ -160,6 +161,11 @@ class OTPVerification extends StatelessWidget {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
                                         builder: (context) => const AdminHome(),
+                                      ));
+                                    } else if (userType == 'USER Login') {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => const UserHome(),
                                       ));
                                     }
                                   },

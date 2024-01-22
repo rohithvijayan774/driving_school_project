@@ -5,8 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 
-class ManageInvoice extends StatelessWidget {
-  const ManageInvoice({super.key});
+class Invoice extends StatelessWidget {
+  const Invoice({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class ManageInvoice extends StatelessWidget {
                         width: 20,
                       ),
                       Text(
-                        'Manage Invoice',
+                        'Invoice',
                         style: GoogleFonts.epilogue(
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
@@ -60,7 +60,7 @@ class ManageInvoice extends StatelessWidget {
                   width: width,
                   height: 50,
                   child: Text(
-                    'Upcoming Invoice:',
+                    'Download Invoice:',
                     style: GoogleFonts.epilogue(
                         fontSize: 20, fontWeight: FontWeight.w500),
                   ),

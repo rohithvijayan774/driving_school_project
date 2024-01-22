@@ -5,8 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 
-class ManageCourse extends StatelessWidget {
-  const ManageCourse({super.key});
+class Courses extends StatelessWidget {
+  const Courses({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,6 @@ class ManageCourse extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final adminCourseController = Provider.of<UserController>(context);
     return Scaffold(
-      
       body: Stack(
         children: [
           ////////////////////////////////////////////////////////
@@ -47,7 +46,7 @@ class ManageCourse extends StatelessWidget {
                         width: 20,
                       ),
                       Text(
-                        'Manage All Courses',
+                        'Packages',
                         style: GoogleFonts.epilogue(
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
@@ -61,7 +60,7 @@ class ManageCourse extends StatelessWidget {
                   width: width,
                   height: 50,
                   child: Text(
-                    'All Courses',
+                    'Choose Package',
                     style: GoogleFonts.epilogue(
                         fontSize: 20, fontWeight: FontWeight.w500),
                   ),
@@ -90,60 +89,60 @@ class ManageCourse extends StatelessWidget {
                         child: SizedBox(
                           height: height * .19,
                           child: Card(
-                              color: index % 2 == 0
-                                  ? const Color(0xFF1B53FF)
-                                  : const Color(0xFFF4E558),
-                              child: Stack(
-                                children: [
-                                  Positioned(
-                                    right: 0,
-                                    child: Image.asset(
-                                      'assets/Ellipse 15.png',
-                                      scale: 0.9,
-                                    ),
+                            color: index % 2 == 0
+                                ? const Color(0xFF1B53FF)
+                                : const Color(0xFFF4E558),
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  right: 0,
+                                  child: Image.asset(
+                                    'assets/Ellipse 15.png',
+                                    scale: 0.9,
                                   ),
-                                  Positioned(
-                                    right: 0,
-                                    child: Image.asset(
-                                      'assets/Ellipse 14.png',
-                                      scale: 0.9,
-                                    ),
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  child: Image.asset(
+                                    'assets/Ellipse 14.png',
+                                    scale: 0.9,
                                   ),
-                                  ////////////////////////////////////////////
-                                  Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Text(
-                                          '${index + 1}',
-                                          style: GoogleFonts.fraunces(
-                                              fontSize: 20,
-                                              color: Colors.white),
-                                        ),
-                                        Text(
-                                          adminCourseController
-                                              .courseList[index]['name'],
-                                          style: GoogleFonts.epilogue(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 12),
-                                        ),
-                                        Text(
-                                          '${adminCourseController.courseList[index]['price']}',
-                                          style: GoogleFonts.fraunces(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 20),
-                                        ),
-                                      ],
-                                    ),
+                                ),
+                                ////////////////////////////////////////////
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Text(
+                                        '${index + 1}',
+                                        style: GoogleFonts.fraunces(
+                                            fontSize: 20, color: Colors.white),
+                                      ),
+                                      Text(
+                                        adminCourseController.courseList[index]
+                                            ['name'],
+                                        style: GoogleFonts.epilogue(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 12),
+                                      ),
+                                      Text(
+                                        '${adminCourseController.courseList[index]['price']}',
+                                        style: GoogleFonts.fraunces(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 20),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              )),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       );
                     },
@@ -153,21 +152,6 @@ class ManageCourse extends StatelessWidget {
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const AddCourse(),
-            ),
-          );
-        },
-        shape: const CircleBorder(),
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
       ),
     );
   }

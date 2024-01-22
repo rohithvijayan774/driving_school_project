@@ -1,4 +1,6 @@
 import 'package:driving_school/controller/user_controller.dart';
+import 'package:driving_school/views/admin/add_course.dart';
+import 'package:driving_school/views/admin/attendance_marking.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -13,28 +15,39 @@ class UsersList extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final adminUserController = Provider.of<UserController>(context);
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: const Icon(EvaIcons.arrow_ios_back_outline),
-        ),
-        centerTitle: true,
-        title: Text(
-          'All Users',
-          style: GoogleFonts.epilogue(),
-        ),
-      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 20,
         ),
         child: Column(
           children: [
+            SizedBox(
+              width: width,
+              height: height / 6,
+              child: Row(
+                // crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(EvaIcons.arrow_ios_back_outline),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Text(
+                    'View All Users',
+                    style: GoogleFonts.epilogue(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             Container(
-              alignment: Alignment.bottomLeft,
+              alignment: Alignment.topLeft,
               width: width,
               height: 50,
               child: Text(
@@ -54,12 +67,15 @@ class UsersList extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () {
-                      // Navigator.of(context).push(
-                      //   MaterialPageRoute(
-                      //     builder: (context) => adminUserController
-                      //         .adminServiceList[index]['onTap'],
-                      //   ),
-                      // );
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => AttendanceMarking(
+                              userName: adminUserController.usersList[index]
+                                  ['name'],
+                              userNumber: adminUserController.usersList[index]
+                                  ['phone']),
+                        ),
+                      );
                     },
                     radius: 20,
                     borderRadius: BorderRadius.circular(20),
