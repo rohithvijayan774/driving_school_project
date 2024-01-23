@@ -79,37 +79,40 @@ class ChooseInstructor extends StatelessWidget {
                     child: SizedBox(
                       height: height * .19,
                       child: Card(
-                          // color: Colors.amber,
-                          child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          CircleAvatar(
-                            radius: 30,
-                            backgroundImage: AssetImage(adminInstrctrController
-                                .instrctrList[index]['image']),
-                          ),
-                          Text(
-                            adminInstrctrController.instrctrList[index]['name'],
-                            style: GoogleFonts.epilogue(
-                                fontWeight: FontWeight.w500, fontSize: 18),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: TextButton(
-                                  onPressed: () {},
-                                  child: const Text('Select'),
+                        // color: Colors.amber,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            CircleAvatar(
+                              radius: 30,
+                              backgroundImage: AssetImage(
+                                  adminInstrctrController.instrctrList[index]
+                                      ['image']),
+                            ),
+                            Text(
+                              adminInstrctrController.instrctrList[index]
+                                  ['name'],
+                              style: GoogleFonts.epilogue(
+                                  fontWeight: FontWeight.w500, fontSize: 18),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: TextButton(
+                                    onPressed: () {},
+                                    child: const Text('Select'),
+                                  ),
                                 ),
-                              ),
-                              IconButton.outlined(
-                                onPressed: () {},
-                                icon: const Icon(Icons.call),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )),
+                                IconButton.outlined(
+                                  onPressed: () {},
+                                  icon: const Icon(Icons.call),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 },

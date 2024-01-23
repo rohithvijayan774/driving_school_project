@@ -1,6 +1,7 @@
 import 'package:driving_school/const.dart';
 import 'package:driving_school/controller/user_controller.dart';
 import 'package:driving_school/views/admin/admin_home.dart';
+import 'package:driving_school/views/user/add_user_details.dart';
 import 'package:driving_school/views/user/user_home.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -165,7 +166,7 @@ class OTPVerification extends StatelessWidget {
                                     } else if (userType == 'USER Login') {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
-                                        builder: (context) => const UserHome(),
+                                        builder: (context) => const AddUserDetails(),
                                       ));
                                     }
                                   },

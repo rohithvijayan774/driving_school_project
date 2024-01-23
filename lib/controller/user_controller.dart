@@ -7,8 +7,10 @@ import 'package:driving_school/views/admin/manage_rc.dart';
 import 'package:driving_school/views/admin/users_list.dart';
 import 'package:driving_school/views/user/contact_us.dart';
 import 'package:driving_school/views/user/courses.dart';
+import 'package:driving_school/views/user/history.dart';
 import 'package:driving_school/views/user/invoice.dart';
 import 'package:driving_school/views/user/select_instructor.dart';
+import 'package:driving_school/views/user/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -51,7 +53,7 @@ class UserController extends ChangeNotifier {
     {
       'service name': 'Profile',
       'image': 'assets/man 1.png',
-      'onTap': const UsersList()
+      'onTap': const UserProfile()
     },
     {
       'service name': 'Course',
@@ -71,7 +73,7 @@ class UserController extends ChangeNotifier {
     {
       'service name': 'History',
       'image': 'assets/logout 1.png',
-      'onTap': const ManageRC(),
+      'onTap': const History(),
     },
     {
       'service name': 'Contact',

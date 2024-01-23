@@ -1,11 +1,12 @@
 import 'package:driving_school/controller/user_controller.dart';
+import 'package:driving_school/views/admin/add_course.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 
-class ContactUs extends StatelessWidget {
-  const ContactUs({super.key});
+class History extends StatelessWidget {
+  const History({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +46,7 @@ class ContactUs extends StatelessWidget {
                         width: 20,
                       ),
                       Text(
-                        'Contact Us',
+                        'Attendance',
                         style: GoogleFonts.epilogue(
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
@@ -54,46 +55,50 @@ class ContactUs extends StatelessWidget {
                     ],
                   ),
                 ),
+                Container(
+                  alignment: Alignment.topLeft,
+                  width: width,
+                  height: 50,
+                  child: Text(
+                    'Attendance History',
+                    style: GoogleFonts.epilogue(
+                        fontSize: 20, fontWeight: FontWeight.w500),
+                  ),
+                ),
                 Expanded(
                   child: ListView.separated(
                       itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: ListTile(
-                            leading: index % 2 == 0
-                                ? Image.asset('assets/contact_blue.png')
-                                : Image.asset('assets/contact_yellow.png'),
-                            title: SizedBox(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          'Name: ',
-                                          style: GoogleFonts.epilogue(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 15),
-                                        ),
-                                        Expanded(
-                                          child: Text(
-                                            '9876543210',
-                                            overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.fraunces(
-                                                fontSize: 15),
-                                          ),
-                                        ),
-                                      ],
+                        return Card(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: ListTile(
+                              leading: Image.asset('assets/attendance.png'),
+                              title: SizedBox(
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Attendance Date:',
+                                      style: GoogleFonts.epilogue(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 15),
                                     ),
-                                  ),
-                                ],
+                                    Expanded(
+                                      child: Text(
+                                        '10/02/2024',
+                                        overflow: TextOverflow.ellipsis,
+                                        style:
+                                            GoogleFonts.fraunces(fontSize: 15),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         );
                       },
-                      separatorBuilder: (context, index) => const Divider(
-                            thickness: 0.3,
+                      separatorBuilder: (context, index) => const SizedBox(
+                            height: 10,
                           ),
                       itemCount: 5),
                 )
