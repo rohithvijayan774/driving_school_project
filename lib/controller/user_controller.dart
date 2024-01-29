@@ -1,4 +1,10 @@
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:driving_school/models/user_model.dart';
+import 'package:driving_school/utils/authentication_dialogue_widget.dart';
 import 'package:driving_school/views/admin/manage_contact.dart';
 import 'package:driving_school/views/admin/manage_course.dart';
 import 'package:driving_school/views/admin/manage_instructor.dart';
@@ -11,8 +17,11 @@ import 'package:driving_school/views/user/history.dart';
 import 'package:driving_school/views/user/invoice.dart';
 import 'package:driving_school/views/user/select_instructor.dart';
 import 'package:driving_school/views/user/user_profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UserController extends ChangeNotifier {
   //////////////////////////////////////////////////////////////////////////////
@@ -96,15 +105,24 @@ class UserController extends ChangeNotifier {
     {'name': 'Akbar', 'image': 'assets/teacher 1.png'},
   ];
   List<Map<String, dynamic>> courseList = [
-    {'name': 'Uniform driving hours (colved)', 'price': 39.00},
+    {'name': 'Uniform driving hours (colved)', 'price': 1.00},
     {'name': 'Uniform driving hours (colved)', 'price': 112.00},
     {'name': 'Uniform driving hours (colved)', 'price': 39.00},
     {'name': 'Uniform driving hours (colved)', 'price': 112.00},
   ];
 
   //////////////////////////////////////////////////////////////////////////////
+  String adminID = 'admin@driving';
+  String adminPassword = '123456';
+  GlobalKey<FormState> adminLoginKey = GlobalKey<FormState>();
+  TextEditingController adminIDController = TextEditingController();
+  TextEditingController adminPasswordController = TextEditingController();
+
   GlobalKey<FormState> numberKey = GlobalKey<FormState>();
+  GlobalKey<FormState> userDetailsKey = GlobalKey<FormState>();
   TextEditingController numberController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController userEmailController = TextEditingController();
 
   //---------------For country Pick-------------------
 
@@ -134,25 +152,223 @@ class UserController extends ChangeNotifier {
   void setPhonenumber(String value, context) {
     numberController.text = value;
     if (value.length == 10) {
-      sendOTP(value);
+      sendOTP(context);
 
       FocusScope.of(context).unfocus();
     }
     notifyListeners();
   }
 
-  sendOTP(String number) async {
-    await Fluttertoast.showToast(
-        msg: "This is Center Short Toast",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
-    print('sending OTP to $number');
+  String? otpError;
+  String verificationCode = '';
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  FirebaseStorage firebaseStorage = FirebaseStorage.instance;
+  String? otpCode;
+
+  String? _uid;
+  String get uid => _uid!;
+
+  Future<void> sendOTP(context) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const AuthenticationDialogueWidget(
+          message: 'Authenticating, Please wait...',
+        );
+      },
+    );
+    String userPhoneNumber = numberController.text.trim();
+    await firebaseAuth.verifyPhoneNumber(
+      phoneNumber: "+${selectedCountry.phoneCode}$userPhoneNumber",
+      verificationCompleted: (phoneAuthCredential) {},
+      verificationFailed: (FirebaseAuthException error) {
+        otpError = error.toString();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(
+              error.toString(),
+              style: GoogleFonts.epilogue(
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+
+        Navigator.pop(context);
+
+        log("Verification failed $error");
+      },
+      codeSent: (String verificationId, int? forceResendingToken) {
+        verificationCode = verificationId;
+        log(verificationCode);
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'OTP Sent to +${selectedCountry.phoneCode}$userPhoneNumber',
+            ),
+          ),
+        );
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
+    _uid = firebaseAuth.currentUser!.uid;
+    log("OTP Sent to +${selectedCountry.phoneCode}$userPhoneNumber");
+
     notifyListeners();
   }
+
+  verifyOTP({
+    required BuildContext context,
+    required String verificationId,
+    required String userOTP,
+    required Function onSuccess,
+  }) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const AuthenticationDialogueWidget(
+          message: 'Verifying OTP...',
+        );
+      },
+    );
+    try {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+          verificationId: verificationId, smsCode: userOTP);
+      User? user = (await firebaseAuth.signInWithCredential(credential)).user;
+      if (user != null) {
+        _uid = user.uid;
+        onSuccess();
+      }
+      log("OTP correct");
+    } catch (e) {
+      Navigator.pop(context);
+      log('$e');
+    }
+    notifyListeners();
+  }
+
+  /////////////////DATEBASE OPERATIONS/////////////////////////////////////////
+  Future<bool> checkExistingUser() async {
+    DocumentSnapshot snapshot =
+        await firebaseFirestore.collection('users').doc(_uid).get();
+
+    if (snapshot.exists) {
+      log('USER EXISTS');
+      return true;
+    } else {
+      log('NEW USER');
+      return false;
+    }
+  }
+
+  UserModel? _userModel;
+  UserModel get userModel => _userModel!;
+
+  Future<void> saveUser(
+    String userID,
+    String userName,
+    String userEmail,
+    int userNumber,
+  ) async {
+    _userModel = UserModel(
+      userID: userID,
+      userName: userName,
+      userEmail: userEmail,
+      userNumber: userNumber,
+    );
+
+    await firebaseFirestore
+        .collection('users')
+        .doc(userID)
+        .set(_userModel!.toMap());
+
+    notifyListeners();
+  }
+
+  Future fetchUserData() async {
+    try {
+      await firebaseFirestore
+          .collection('users')
+          .doc(uid)
+          .get()
+          .then((DocumentSnapshot snapshot) {
+        _userModel = UserModel(
+          userID: snapshot['userID'],
+          userName: snapshot['userName'],
+          userEmail: snapshot['userEmail'],
+          userNumber: snapshot['userNumber'],
+          userProPic: snapshot['userProPic'],
+          selectedCourse: snapshot['selectedCourse'],
+          selectedInstructor: snapshot['selectedInstructor'],
+        );
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+ 
+
+  ////////////////////////////////////////////////////////////////////////////
+
+  Future<String> storeImagetoStorge(String ref, File file) async {
+    SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
+    UploadTask uploadTask =
+        firebaseStorage.ref().child(ref).putFile(file, metadata);
+    TaskSnapshot snapshot = await uploadTask;
+    String downloadURL = await snapshot.ref.getDownloadURL();
+    log(downloadURL);
+    notifyListeners();
+    return downloadURL;
+  }
+
+  File? proPic;
+  String? proPicPath;
+
+  Future<File> pickproPic(context) async {
+    try {
+      final pickedImage =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+
+      if (pickedImage != null) {
+        proPic = File(pickedImage.path);
+      }
+    } catch (e) {
+      print(e);
+    }
+    notifyListeners();
+    return proPic!;
+  }
+
+  Future<void> selectproPic(context) async {
+    proPic = await pickproPic(context);
+    proPicPath = proPic!.path;
+    notifyListeners();
+  }
+
+  Future uploadProPic(File proPic) async {
+    try {
+      await storeImagetoStorge('Users Profile Pic/$_uid', proPic)
+          .then((value) async {
+        userModel.userProPic = value;
+
+        DocumentReference docRef =
+            firebaseFirestore.collection('users').doc(_uid);
+        docRef.update({'userProPic': value});
+      });
+      _userModel = userModel;
+      print('Pic uploaded successfully');
+      // clearCarsField();
+      notifyListeners();
+    } catch (e) {
+      print('image upload failed :$e');
+    }
+  }
+
+  
 
   ///////////////////////////////////////////////////////////////////////////
   Map<String, Map<DateTime, List<dynamic>>> userAttendance = {};

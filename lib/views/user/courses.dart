@@ -1,5 +1,6 @@
+import 'package:driving_school/controller/admin_controller.dart';
 import 'package:driving_school/controller/user_controller.dart';
-import 'package:driving_school/views/admin/add_course.dart';
+import 'package:driving_school/views/user/choose_payment.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -66,87 +67,132 @@ class Courses extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 20,
-                            mainAxisSpacing: 20,
-                            childAspectRatio: 1),
-                    itemCount: adminCourseController.courseList.length,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: () {
-                          // Navigator.of(context).push(
-                          //   MaterialPageRoute(
-                          //     builder: (context) => adminCourseController
-                          //         .adminServiceList[index]['onTap'],
-                          //   ),
-                          // );
-                        },
-                        radius: 20,
-                        borderRadius: BorderRadius.circular(20),
-                        child: SizedBox(
-                          height: height * .19,
-                          child: Card(
-                            color: index % 2 == 0
-                                ? const Color(0xFF1B53FF)
-                                : const Color(0xFFF4E558),
-                            child: Stack(
-                              children: [
-                                Positioned(
-                                  right: 0,
-                                  child: Image.asset(
-                                    'assets/Ellipse 15.png',
-                                    scale: 0.9,
-                                  ),
-                                ),
-                                Positioned(
-                                  right: 0,
-                                  child: Image.asset(
-                                    'assets/Ellipse 14.png',
-                                    scale: 0.9,
-                                  ),
-                                ),
-                                ////////////////////////////////////////////
-                                Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Text(
-                                        '${index + 1}',
-                                        style: GoogleFonts.fraunces(
-                                            fontSize: 20, color: Colors.white),
+                  child: Consumer<AdminController>(
+                      builder: (context, courseController, _) {
+                    return FutureBuilder(
+                        future: courseController.fetchCourses(),
+                        builder: (context, snapshot) {
+                          return snapshot.connectionState ==
+                                  ConnectionState.waiting
+                              ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : courseController.coursesList.isEmpty
+                                  ? Center(
+                                      child: Text(
+                                        'No Courses Found',
+                                        style: GoogleFonts.epilogue(),
                                       ),
-                                      Text(
-                                        adminCourseController.courseList[index]
-                                            ['name'],
-                                        style: GoogleFonts.epilogue(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 12),
-                                      ),
-                                      Text(
-                                        '${adminCourseController.courseList[index]['price']}',
-                                        style: GoogleFonts.fraunces(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 20),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                                    )
+                                  : GridView.builder(
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 2,
+                                              crossAxisSpacing: 20,
+                                              mainAxisSpacing: 20,
+                                              childAspectRatio: 1),
+                                      itemCount:
+                                          courseController.coursesList.length,
+                                      itemBuilder: (context, index) {
+                                        return InkWell(
+                                          onTap: () {
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ChoosePayment(
+                                                  price: double.parse(
+                                                    courseController
+                                                        .coursesList[index]
+                                                        .coursePrice
+                                                        .toString(),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          radius: 20,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          child: SizedBox(
+                                            height: height * .19,
+                                            child: Card(
+                                              color: index % 2 == 0
+                                                  ? const Color(0xFF1B53FF)
+                                                  : const Color(0xFFF4E558),
+                                              child: Stack(
+                                                children: [
+                                                  Positioned(
+                                                    right: 0,
+                                                    child: Image.asset(
+                                                      'assets/Ellipse 15.png',
+                                                      scale: 0.9,
+                                                    ),
+                                                  ),
+                                                  Positioned(
+                                                    right: 0,
+                                                    child: Image.asset(
+                                                      'assets/Ellipse 14.png',
+                                                      scale: 0.9,
+                                                    ),
+                                                  ),
+                                                  ////////////////////////////////////////////
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            10.0),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children: [
+                                                        Text(
+                                                          '${index + 1}',
+                                                          style: GoogleFonts
+                                                              .fraunces(
+                                                                  fontSize: 20,
+                                                                  color: Colors
+                                                                      .white),
+                                                        ),
+                                                        Text(
+                                                          courseController
+                                                              .coursesList[
+                                                                  index]
+                                                              .courseName,
+                                                          style: GoogleFonts
+                                                              .epilogue(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize: 12),
+                                                        ),
+                                                        Text(
+                                                          '₹${courseController.coursesList[index].coursePrice}',
+                                                          style: GoogleFonts
+                                                              .fraunces(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize: 20),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                        });
+                  }),
                 )
               ],
             ),

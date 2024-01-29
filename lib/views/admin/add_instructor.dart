@@ -2,7 +2,6 @@ import 'package:driving_school/const.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
-import 'package:iconsax/iconsax.dart';
 
 class AddInstructor extends StatelessWidget {
   const AddInstructor({super.key});
@@ -11,7 +10,7 @@ class AddInstructor extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    bool haveImage = false;
+    
     return Scaffold(
       body: Stack(
         children: [

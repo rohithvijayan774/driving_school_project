@@ -1,5 +1,5 @@
+import 'package:driving_school/controller/admin_controller.dart';
 import 'package:driving_school/controller/user_controller.dart';
-import 'package:driving_school/views/admin/add_course.dart';
 import 'package:driving_school/views/admin/attendance_marking.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,7 +13,8 @@ class UsersList extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    final adminUserController = Provider.of<UserController>(context);
+    final adminUserController =
+        Provider.of<AdminController>(context, listen: false);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(
@@ -57,53 +58,91 @@ class UsersList extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20,
-                    childAspectRatio: 1),
-                itemCount: adminUserController.usersList.length,
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => AttendanceMarking(
-                              userName: adminUserController.usersList[index]
-                                  ['name'],
-                              userNumber: adminUserController.usersList[index]
-                                  ['phone']),
-                        ),
-                      );
-                    },
-                    radius: 20,
-                    borderRadius: BorderRadius.circular(20),
-                    child: SizedBox(
-                      height: height * .19,
-                      child: Card(
-                          // color: Colors.amber,
-                          child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          CircleAvatar(
-                            radius: 30,
-                            backgroundImage: AssetImage(
-                                adminUserController.usersList[index]['image']),
-                          ),
-                          Text(
-                            adminUserController.usersList[index]['name'],
-                            style: GoogleFonts.epilogue(
-                                fontWeight: FontWeight.w500, fontSize: 18),
-                          ),
-                          IconButton.outlined(
-                              onPressed: () {}, icon: Icon(Icons.call))
-                        ],
-                      )),
-                    ),
-                  );
-                },
-              ),
+              child: Consumer<AdminController>(
+                  builder: (context, userController, _) {
+                return FutureBuilder(
+                    future: userController.fetchUsers(),
+                    builder: (context, snapshot) {
+                      return snapshot.connectionState == ConnectionState.waiting
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : userController.usersDataList.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    'No Users Found',
+                                    style: GoogleFonts.epilogue(),
+                                  ),
+                                )
+                              : GridView.builder(
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          crossAxisSpacing: 20,
+                                          mainAxisSpacing: 20,
+                                          childAspectRatio: 1),
+                                  itemCount:
+                                      userController.usersDataList.length,
+                                  itemBuilder: (context, index) {
+                                    return InkWell(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                AttendanceMarking(
+                                                    userName:
+                                                        userController
+                                                            .usersDataList[
+                                                                index]
+                                                            .userName,
+                                                    userNumber: userController
+                                                        .usersDataList[index]
+                                                        .userNumber),
+                                          ),
+                                        );
+                                      },
+                                      radius: 20,
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: SizedBox(
+                                        height: height * .19,
+                                        child: Card(
+                                            // color: Colors.amber,
+                                            child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 30,
+                                              backgroundImage: userController
+                                                          .usersDataList[index]
+                                                          .userProPic !=
+                                                      null
+                                                  ? NetworkImage(userController
+                                                      .usersDataList[index]
+                                                      .userProPic!)
+                                                  : const AssetImage(
+                                                          'assets/profile.jpg')
+                                                      as ImageProvider,
+                                            ),
+                                            Text(
+                                              userController
+                                                  .usersDataList[index]
+                                                  .userName,
+                                              style: GoogleFonts.epilogue(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 18),
+                                            ),
+                                            IconButton.outlined(
+                                                onPressed: () {},
+                                                icon: const Icon(Icons.call))
+                                          ],
+                                        )),
+                                      ),
+                                    );
+                                  },
+                                );
+                    });
+              }),
             )
           ],
         ),

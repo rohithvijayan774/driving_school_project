@@ -1,5 +1,4 @@
 import 'package:driving_school/controller/user_controller.dart';
-import 'package:driving_school/views/admin/add_course.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -12,7 +11,7 @@ class Invoice extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    final adminCourseController = Provider.of<UserController>(context);
+    // final userInvoiceController = Provider.of<UserController>(context);
     return Scaffold(
       body: Stack(
         children: [

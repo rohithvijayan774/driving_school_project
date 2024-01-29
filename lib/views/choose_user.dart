@@ -1,4 +1,5 @@
 import 'package:driving_school/const.dart';
+import 'package:driving_school/views/admin/admin_login.dart';
 import 'package:driving_school/views/otp_verification.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -40,8 +41,7 @@ class ChooseUser extends StatelessWidget {
                                 (context, animation, secondaryAnimation) =>
                                     FadeTransition(
                               opacity: animation,
-                              child:
-                                  const OTPVerification(userType: 'USER Login'),
+                              child: const OTPVerification(),
                             ),
                             transitionDuration:
                                 const Duration(milliseconds: 1500),
@@ -92,8 +92,7 @@ class ChooseUser extends StatelessWidget {
                                   (context, animation, secondaryAnimation) =>
                                       FadeTransition(
                                         opacity: animation,
-                                        child: const OTPVerification(
-                                            userType: 'ADMIN Login'),
+                                        child: const AdminLogin(),
                                       ),
                               transitionDuration:
                                   const Duration(milliseconds: 1500),

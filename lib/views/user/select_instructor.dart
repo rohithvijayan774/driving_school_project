@@ -1,6 +1,4 @@
 import 'package:driving_school/controller/user_controller.dart';
-import 'package:driving_school/views/admin/add_course.dart';
-import 'package:driving_school/views/admin/add_instructor.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
