@@ -57,7 +57,13 @@ class PaymentGateway extends ChangeNotifier {
     }
   }
 
-  Widget displayUpiApps(upiID, receiverName, price, context) {
+  Widget displayUpiApps(
+    upiID,
+    receiverName,
+    price,
+    context,
+    Function onSuccess,
+  ) {
     if (apps.isEmpty) {
       return const Center(
         child: Text('No Payment Apps found'),
@@ -77,9 +83,10 @@ class PaymentGateway extends ChangeNotifier {
                   (app) {
                     return InkWell(
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const PaymentSuccessful(),
-                        ));
+                        onSuccess();
+                        // Navigator.of(context).push(MaterialPageRoute(
+                        //   builder: (context) => const PaymentSuccessful(),
+                        // ));
                       },
                       onLongPress: () {
                         initiateTransaction(

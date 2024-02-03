@@ -1,4 +1,5 @@
 import 'package:driving_school/const.dart';
+import 'package:driving_school/controller/admin_controller.dart';
 import 'package:driving_school/controller/user_controller.dart';
 import 'package:driving_school/views/admin/admin_home.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ class AdminLogin extends StatelessWidget {
     // final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final adminLoginController =
-        Provider.of<UserController>(context, listen: false);
+        Provider.of<AdminController>(context, listen: false);
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -132,11 +133,12 @@ class AdminLogin extends StatelessWidget {
                                 if (adminLoginController
                                     .adminLoginKey.currentState!
                                     .validate()) {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => const AdminHome(),
-                                    ),
-                                  );
+                                  adminLoginController.adminLogin(
+                                      adminLoginController
+                                          .adminIDController.text,
+                                      adminLoginController
+                                          .adminPasswordController.text,
+                                      context);
                                 }
                               },
                               child: Text(

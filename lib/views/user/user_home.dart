@@ -7,16 +7,18 @@ import 'package:icons_plus/icons_plus.dart';
 import 'package:provider/provider.dart';
 
 class UserHome extends StatelessWidget {
-  const UserHome({super.key});
+  final String uid;
+  const UserHome({required this.uid, super.key});
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final userHomeController = Provider.of<UserController>(context);
+    print('HOME PAGE');
     return Scaffold(
       body: FutureBuilder(
-        future: userHomeController.fetchUserData(),
+        future: userHomeController.fetchUserData(uid),
         builder: (context, snapshot) {
           return snapshot.connectionState == ConnectionState.waiting
               ? const Center(
@@ -83,13 +85,22 @@ class UserHome extends StatelessWidget {
                           child: Card(
                             color: defaultBlue,
                             child: Center(
-                              child: Text(
-                                'No Class Selected',
-                                style: GoogleFonts.epilogue(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
+                                child: userHomeController
+                                            .userModel.selectedCourse ==
+                                        null
+                                    ? Text(
+                                        'No Class Selected',
+                                        style: GoogleFonts.epilogue(
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : Text(
+                                        userHomeController
+                                            .userModel.selectedCourse!,
+                                        style: GoogleFonts.epilogue(
+                                          color: Colors.white,
+                                        ),
+                                      )),
                           ),
                         ),
                         const SizedBox(

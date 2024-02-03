@@ -87,11 +87,11 @@ class PaymentSuccessful extends StatelessWidget {
                                     const MaterialStatePropertyAll(defaultBlue),
                               ),
                               onPressed: () {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                      builder: (context) => const UserHome(),
-                                    ),
-                                    (route) => false);
+                                // Navigator.of(context).pushAndRemoveUntil(
+                                //     MaterialPageRoute(
+                                //       builder: (context) => const UserHome(),
+                                //     ),
+                                //     (route) => false);
                               },
                               child: Text(
                                 'CLOSE',

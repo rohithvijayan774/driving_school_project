@@ -2,13 +2,13 @@ class InstructorModel {
   String instructorID;
   String instructorName;
   int instructorNumber;
-  String instructorProPic;
+  String? instructorProPic;
 
   InstructorModel({
     required this.instructorID,
     required this.instructorName,
     required this.instructorNumber,
-    required this.instructorProPic,
+     this.instructorProPic,
   });
 
   factory InstructorModel.fromMap(Map<String, dynamic> map) {

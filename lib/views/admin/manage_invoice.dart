@@ -1,7 +1,8 @@
-
+import 'package:driving_school/controller/admin_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:provider/provider.dart';
 
 class ManageInvoice extends StatelessWidget {
   const ManageInvoice({super.key});
@@ -64,65 +65,115 @@ class ManageInvoice extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: ListView.separated(
-                      itemBuilder: (context, index) {
-                        return Card(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: ListTile(
-                              leading: Image.asset('assets/invoice_lead.png'),
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SizedBox(
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          'Payment Date:',
-                                          style: GoogleFonts.epilogue(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 15),
-                                        ),
-                                        Expanded(
-                                          child: Text(
-                                            '10/02/2024',
-                                            overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.fraunces(
-                                                fontSize: 15),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Course:',
-                                        style: GoogleFonts.epilogue(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 15),
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          '20 hours for student',
-                                          style: GoogleFonts.epilogue(
-                                              fontSize: 15),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              trailing: Image.asset('assets/invoice_tail.png'),
-                            ),
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) => const SizedBox(
-                            height: 10,
-                          ),
-                      itemCount: 5),
+                  child: Consumer<AdminController>(
+                      builder: (context, adminInvoiceController, _) {
+                    return FutureBuilder(
+                        future: adminInvoiceController.fetchAllInvoices(),
+                        builder: (context, snapshot) {
+                          return snapshot.connectionState ==
+                                  ConnectionState.waiting
+                              ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : snapshot.hasError
+                                  ? Center(
+                                      child: Text(snapshot.error.toString()),
+                                    )
+                                  : adminInvoiceController.invoiceList.isEmpty
+                                      ? const Center(
+                                          child: Text('No  Invoices Found'),
+                                        )
+                                      : ListView.separated(
+                                          itemBuilder: (context, index) {
+                                            return Card(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 10),
+                                                child: ListTile(
+                                                  leading: Image.asset(
+                                                      'assets/invoice_lead.png'),
+                                                  title: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      SizedBox(
+                                                        child: Row(
+                                                          children: [
+                                                            Text(
+                                                              'Payment Date:',
+                                                              style: GoogleFonts
+                                                                  .epilogue(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      fontSize:
+                                                                          15),
+                                                            ),
+                                                            Expanded(
+                                                              child: Text(
+                                                                adminInvoiceController
+                                                                    .invoiceList[
+                                                                        index]
+                                                                    .invoiceDate,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style: GoogleFonts
+                                                                    .fraunces(
+                                                                        fontSize:
+                                                                            15),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Row(
+                                                        children: [
+                                                          Text(
+                                                            'Course:',
+                                                            style: GoogleFonts
+                                                                .epilogue(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontSize:
+                                                                        15),
+                                                          ),
+                                                          Expanded(
+                                                            child: Text(
+                                                              adminInvoiceController
+                                                                  .invoiceList[
+                                                                      index]
+                                                                  .invoiceCourseName,
+                                                              style: GoogleFonts
+                                                                  .epilogue(
+                                                                      fontSize:
+                                                                          15),
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  trailing: Image.asset(
+                                                      'assets/invoice_tail.png'),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          separatorBuilder: (context, index) =>
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                          itemCount: adminInvoiceController
+                                              .invoiceList.length);
+                        });
+                  }),
                 )
               ],
             ),

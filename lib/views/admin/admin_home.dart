@@ -1,5 +1,6 @@
 import 'package:driving_school/controller/user_controller.dart';
 import 'package:driving_school/views/choose_user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
@@ -34,11 +35,12 @@ class AdminHome extends StatelessWidget {
                     ),
                     InkWell(
                       onTap: () {
-                        Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                              builder: (context) => const ChooseUser(),
-                            ),
-                            (route) => false);
+                        adminHomeController.firebaseAuth.signOut().then(
+                            (value) => Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                  builder: (context) => const ChooseUser(),
+                                ),
+                                (route) => false));
                       },
                       child: Column(
                         children: [
@@ -48,6 +50,8 @@ class AdminHome extends StatelessWidget {
                               Iconsax.logout_1,
                               color: Colors.white,
                             ),
+
+                            
                           ),
                           Text(
                             'Logout',

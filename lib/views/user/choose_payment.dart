@@ -1,4 +1,6 @@
 import 'package:driving_school/controller/payment_gateway.dart';
+import 'package:driving_school/controller/user_controller.dart';
+import 'package:driving_school/views/user/payment_successfull.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -6,8 +8,15 @@ import 'package:provider/provider.dart';
 
 class ChoosePayment extends StatelessWidget {
   final double price;
+  final String userName;
+  final String courseName;
+  final String invoiceDate;
+
   const ChoosePayment({
     required this.price,
+    required this.userName,
+    required this.courseName,
+    required this.invoiceDate,
     super.key,
   });
 
@@ -58,8 +67,9 @@ class ChoosePayment extends StatelessWidget {
                     ],
                   ),
                 ),
-                Consumer<PaymentGateway>(
-                  builder: (context, paymentMode, child) {
+                Consumer2<PaymentGateway, UserController>(
+                  builder:
+                      (context, paymentMode, userPaymentController, child) {
                     return FutureBuilder(
                       future: paymentMode.getAllApps(),
                       builder: (context, snapshot) {
@@ -73,6 +83,23 @@ class ChoosePayment extends StatelessWidget {
                                 'Driving School',
                                 price,
                                 context,
+                                () {
+                                  userPaymentController
+                                      .saveInvoice(userName, courseName,
+                                          invoiceDate, price)
+                                      .then(
+                                        (value) => userPaymentController
+                                            .updateCourse(courseName),
+                                      )
+                                      .then(
+                                        (value) => Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const PaymentSuccessful(),
+                                          ),
+                                        ),
+                                      );
+                                },
                               );
                       },
                     );

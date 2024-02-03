@@ -1,5 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:driving_school/controller/admin_controller.dart';
+import 'package:driving_school/controller/user_controller.dart';
+import 'package:driving_school/views/admin/admin_home.dart';
 import 'package:driving_school/views/choose_user.dart';
+import 'package:driving_school/views/user/user_home.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -16,8 +23,44 @@ class SplashScreen extends StatelessWidget {
 
   void gotoNext(context) async {
     await Future.delayed(const Duration(seconds: 3));
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => const ChooseUser(),
-    ));
+    final splashProvider = Provider.of<UserController>(context, listen: false);
+    final adminController =
+        Provider.of<AdminController>(context, listen: false);
+
+    if (splashProvider.firebaseAuth.currentUser != null) {
+      if (splashProvider.firebaseAuth.currentUser!.uid ==
+          'GONy6wYAnCXodoTqRIvXqURRNCJ3') {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => const AdminHome(),
+            ),
+            (route) => false);
+      } else {
+        DocumentSnapshot snapshot = await splashProvider.firebaseFirestore
+            .collection('users')
+            .doc(splashProvider.firebaseAuth.currentUser!.uid)
+            .get();
+        if (snapshot.exists) {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) =>
+                    UserHome(uid: FirebaseAuth.instance.currentUser!.uid),
+              ),
+              (route) => false);
+        } else {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => const ChooseUser(),
+              ),
+              (route) => false);
+        }
+      }
+    } else {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const ChooseUser(),
+          ),
+          (route) => false);
+    }
   }
 }

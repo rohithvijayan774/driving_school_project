@@ -2,6 +2,7 @@ import 'package:driving_school/const.dart';
 import 'package:driving_school/controller/user_controller.dart';
 import 'package:driving_school/views/user/add_user_details.dart';
 import 'package:driving_school/views/user/user_home.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -171,8 +172,11 @@ class OTPVerification extends StatelessWidget {
                                         if (value == true) {
                                           Navigator.of(context).push(
                                             MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const UserHome(),
+                                              builder: (context) => UserHome(
+                                                  uid: otpController
+                                                      .firebaseAuth
+                                                      .currentUser!
+                                                      .uid),
                                             ),
                                           );
                                         } else {

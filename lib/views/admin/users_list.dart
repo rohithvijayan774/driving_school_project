@@ -13,8 +13,8 @@ class UsersList extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    final adminUserController =
-        Provider.of<AdminController>(context, listen: false);
+    // final adminUserController =
+    //     Provider.of<AdminController>(context, listen: false);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(

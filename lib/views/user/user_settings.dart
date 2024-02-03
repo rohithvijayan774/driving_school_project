@@ -163,7 +163,9 @@ class UserSettings extends StatelessWidget {
                               .selectproPic(context)
                               .whenComplete(
                                 () => userSettingController.uploadProPic(
-                                    userSettingController.proPic!),
+                                    userSettingController.proPic!,
+                                    'Users Profile Pic',
+                                    userSettingController.uid),
                               );
                         },
                         icon: const Icon(
@@ -222,12 +224,13 @@ class UserSettings extends StatelessWidget {
                 ),
                 const Spacer(),
                 IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                          builder: (context) => const ChooseUser(),
-                        ),
-                        (route) => false);
+                  onPressed: () async {
+                    await userSettingController.firebaseAuth.signOut().then(
+                        (value) => Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => const ChooseUser(),
+                            ),
+                            (route) => false));
                   },
                   icon: const Icon(
                     EvaIcons.log_out,

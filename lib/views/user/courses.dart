@@ -67,8 +67,8 @@ class Courses extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: Consumer<AdminController>(
-                      builder: (context, courseController, _) {
+                  child: Consumer2<AdminController, UserController>(
+                      builder: (context, courseController, userController, _) {
                     return FutureBuilder(
                         future: courseController.fetchCourses(),
                         builder: (context, snapshot) {
@@ -106,6 +106,13 @@ class Courses extends StatelessWidget {
                                                         .coursePrice
                                                         .toString(),
                                                   ),
+                                                  courseName: courseController
+                                                      .coursesList[index]
+                                                      .courseName,
+                                                  userName: userController
+                                                      .userModel.userName,
+                                                  invoiceDate:
+                                                      DateTime.now().toString(),
                                                 ),
                                               ),
                                             );

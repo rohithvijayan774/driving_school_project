@@ -82,7 +82,8 @@ class UserProfile extends StatelessWidget {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'Ladies Driving',
+                                            userProfileController
+                                                .userModel.selectedCourse!,
                                             style: GoogleFonts.epilogue(
                                               color: Colors.white,
                                             ),

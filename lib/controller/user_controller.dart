@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:driving_school/models/invoice_model.dart';
 import 'package:driving_school/models/user_model.dart';
 import 'package:driving_school/utils/authentication_dialogue_widget.dart';
 import 'package:driving_school/views/admin/manage_contact.dart';
@@ -112,11 +113,6 @@ class UserController extends ChangeNotifier {
   ];
 
   //////////////////////////////////////////////////////////////////////////////
-  String adminID = 'admin@driving';
-  String adminPassword = '123456';
-  GlobalKey<FormState> adminLoginKey = GlobalKey<FormState>();
-  TextEditingController adminIDController = TextEditingController();
-  TextEditingController adminPasswordController = TextEditingController();
 
   GlobalKey<FormState> numberKey = GlobalKey<FormState>();
   GlobalKey<FormState> userDetailsKey = GlobalKey<FormState>();
@@ -288,7 +284,7 @@ class UserController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future fetchUserData() async {
+  Future fetchUserData(String uid) async {
     try {
       await firebaseFirestore
           .collection('users')
@@ -309,8 +305,6 @@ class UserController extends ChangeNotifier {
       print(e);
     }
   }
-
- 
 
   ////////////////////////////////////////////////////////////////////////////
 
@@ -349,10 +343,9 @@ class UserController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future uploadProPic(File proPic) async {
+  Future uploadProPic(File proPic, String path, String userID) async {
     try {
-      await storeImagetoStorge('Users Profile Pic/$_uid', proPic)
-          .then((value) async {
+      await storeImagetoStorge('$path/$userID', proPic).then((value) async {
         userModel.userProPic = value;
 
         DocumentReference docRef =
@@ -367,8 +360,6 @@ class UserController extends ChangeNotifier {
       print('image upload failed :$e');
     }
   }
-
-  
 
   ///////////////////////////////////////////////////////////////////////////
   Map<String, Map<DateTime, List<dynamic>>> userAttendance = {};
@@ -388,5 +379,82 @@ class UserController extends ChangeNotifier {
       userAttendance[user]![today] = ['Present'];
     }
     notifyListeners();
+  }
+
+  InvoiceModel? _invoiceModel;
+  InvoiceModel get invoiceModel => _invoiceModel!;
+
+  Future<void> saveInvoice(
+    String invoiceUserName,
+    String invoiceCourseName,
+    String invoiceDate,
+    double invoicePrice,
+  ) async {
+    final docs = firebaseFirestore
+        .collection('users')
+        .doc(firebaseAuth.currentUser!.uid)
+        .collection('invoices')
+        .doc();
+    _invoiceModel = InvoiceModel(
+        invoiceID: docs.id,
+        invoiceUserName: invoiceUserName,
+        invoiceCourseName: invoiceCourseName,
+        invoiceDate: invoiceDate,
+        invoicePrice: invoicePrice);
+
+    await docs.set(_invoiceModel!.toMap());
+    await firebaseFirestore
+        .collection('invoices')
+        .doc(docs.id)
+        .set(_invoiceModel!.toMap());
+  }
+
+  List<InvoiceModel> invoiceList = [];
+  InvoiceModel? invoices;
+
+  Future fetchInvoices() async {
+    try {
+      invoiceList.clear();
+      CollectionReference invoiceCollection = firebaseFirestore
+          .collection('users')
+          .doc(firebaseAuth.currentUser!.uid)
+          .collection('invoices');
+      QuerySnapshot invoiceSnapshot = await invoiceCollection.get();
+
+      for (var doc in invoiceSnapshot.docs) {
+        String invoiceID = doc['invoiceID'];
+        String invoiceUserName = doc['invoiceUserName'];
+        String invoiceCourseName = doc['invoiceCourseName'];
+        String invoiceDate = doc['invoiceDate'];
+        double invoicePrice = doc['invoicePrice'];
+
+        invoices = InvoiceModel(
+            invoiceID: invoiceID,
+            invoiceUserName: invoiceUserName,
+            invoiceCourseName: invoiceCourseName,
+            invoiceDate: invoiceDate,
+            invoicePrice: invoicePrice);
+
+        invoiceList.add(invoices!);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future updateCourse(String courseName) async {
+    try {
+      userModel.selectedCourse = courseName;
+
+      DocumentReference docRef = firebaseFirestore
+          .collection('users')
+          .doc(firebaseAuth.currentUser!.uid);
+      await docRef.update({'selectedCourse': courseName});
+      _userModel = userModel;
+      notifyListeners();
+      print('/////////Course Updated/////////////');
+    } catch (e) {
+      print(e);
+    }
   }
 }

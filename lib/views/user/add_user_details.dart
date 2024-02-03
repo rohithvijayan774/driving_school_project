@@ -183,13 +183,19 @@ class AddUserDetails extends StatelessWidget {
                                       .trim()))
                               .then(
                                 (value) => userDetailsController
-                                    .uploadProPic(userDetailsController.proPic!)
+                                    .uploadProPic(
+                                        userDetailsController.proPic!,
+                                        'Users Profile Pic',
+                                        userDetailsController.uid)
                                     .whenComplete(
                                       () => Navigator.of(context)
                                           .pushAndRemoveUntil(
                                               MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const UserHome(),
+                                                builder: (context) => UserHome(
+                                                    uid: userDetailsController
+                                                        .firebaseAuth
+                                                        .currentUser!
+                                                        .uid),
                                               ),
                                               (route) => false),
                                     ),
