@@ -111,8 +111,14 @@ class UserSettings extends StatelessWidget {
                           const SizedBox(
                             height: 10,
                           ),
-                          const TableWidget(
-                              title: 'Course:', value: 'No course selected'),
+                          TableWidget(
+                              title: 'Course:',
+                              value: userSettingController
+                                          .userModel.selectedCourse ==
+                                      null
+                                  ? 'No course selected'
+                                  : userSettingController
+                                      .userModel.selectedCourse!),
                           const SizedBox(
                             height: 10,
                           ),

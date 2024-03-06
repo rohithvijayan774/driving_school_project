@@ -1,30 +1,27 @@
-class CourseModel {
-  String courseID;
-  String courseName;
-  int courseHours;
-  int coursePrice;
+class ContactModel {
+  String contactID;
+  String contactName;
+  int contactNumber;
 
-  CourseModel({
-    required this.courseID,
-    required this.courseName,
-    required this.courseHours,
-    required this.coursePrice,
+  ContactModel({
+    required this.contactID,
+    required this.contactName,
+    required this.contactNumber,
   });
 
-  factory CourseModel.fromMap(Map<String, dynamic> map) {
-    return CourseModel(
-        courseID: map['courseID'],
-        courseName: map['courseName'],
-        courseHours: map['courseHours'],
-        coursePrice: map['coursePrice'],);
+  factory ContactModel.fromMap(Map<String, dynamic> map) {
+    return ContactModel(
+      contactID: map['contactID'],
+      contactName: map['contactName'],
+      contactNumber: map['contactNumber'],
+    );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'courseID': courseID,
-      'courseName': courseName,
-      'courseHours': courseHours,
-      'coursePrice': coursePrice,
+      'contactID': contactID,
+      'contactName': contactName,
+      'contactNumber': contactNumber,
     };
   }
 }

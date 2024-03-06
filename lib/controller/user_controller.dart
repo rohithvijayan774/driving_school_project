@@ -23,6 +23,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class UserController extends ChangeNotifier {
   //////////////////////////////////////////////////////////////////////////////
@@ -361,26 +362,6 @@ class UserController extends ChangeNotifier {
     }
   }
 
-  ///////////////////////////////////////////////////////////////////////////
-  Map<String, Map<DateTime, List<dynamic>>> userAttendance = {};
-  var today = DateTime.now();
-
-  void onDaySelected(
-      DateTime selectedDay, DateTime focusedDay, String userName) {
-    String user = userName;
-    today = selectedDay;
-    if (!userAttendance.containsKey(user)) {
-      userAttendance[user] = {};
-    }
-
-    if (userAttendance[user]!.containsKey(today)) {
-      userAttendance[user]!.remove(today);
-    } else {
-      userAttendance[user]![today] = ['Present'];
-    }
-    notifyListeners();
-  }
-
   InvoiceModel? _invoiceModel;
   InvoiceModel get invoiceModel => _invoiceModel!;
 
@@ -390,6 +371,9 @@ class UserController extends ChangeNotifier {
     String invoiceDate,
     double invoicePrice,
   ) async {
+    final date = DateTime.parse(invoiceDate);
+    DateTime dueDate = date.add(const Duration(days: 30));
+    String formttedDueDate = DateFormat("dd-MMM-yyy").format(dueDate);
     final docs = firebaseFirestore
         .collection('users')
         .doc(firebaseAuth.currentUser!.uid)
@@ -400,7 +384,8 @@ class UserController extends ChangeNotifier {
         invoiceUserName: invoiceUserName,
         invoiceCourseName: invoiceCourseName,
         invoiceDate: invoiceDate,
-        invoicePrice: invoicePrice);
+        invoicePrice: invoicePrice,
+        dueDate: formttedDueDate);
 
     await docs.set(_invoiceModel!.toMap());
     await firebaseFirestore
@@ -427,13 +412,15 @@ class UserController extends ChangeNotifier {
         String invoiceCourseName = doc['invoiceCourseName'];
         String invoiceDate = doc['invoiceDate'];
         double invoicePrice = doc['invoicePrice'];
+        String dueDate = doc['dueDate'];
 
         invoices = InvoiceModel(
             invoiceID: invoiceID,
             invoiceUserName: invoiceUserName,
             invoiceCourseName: invoiceCourseName,
             invoiceDate: invoiceDate,
-            invoicePrice: invoicePrice);
+            invoicePrice: invoicePrice,
+            dueDate: dueDate);
 
         invoiceList.add(invoices!);
       }
@@ -453,6 +440,22 @@ class UserController extends ChangeNotifier {
       _userModel = userModel;
       notifyListeners();
       print('/////////Course Updated/////////////');
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future updateInstructor(String instructorName) async {
+    try {
+      userModel.selectedInstructor = instructorName;
+
+      DocumentReference docRef = firebaseFirestore
+          .collection('users')
+          .doc(firebaseAuth.currentUser!.uid);
+      await docRef.update({'selectedInstructor': instructorName});
+      _userModel = userModel;
+      notifyListeners();
+      print('/////////Instructor Updated/////////////');
     } catch (e) {
       print(e);
     }

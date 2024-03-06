@@ -1,6 +1,7 @@
 import 'package:driving_school/controller/admin_controller.dart';
 import 'package:driving_school/controller/user_controller.dart';
 import 'package:driving_school/views/admin/attendance_marking.dart';
+import 'package:driving_school/views/admin/user_attedance.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
@@ -88,16 +89,20 @@ class UsersList extends StatelessWidget {
                                       onTap: () {
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
-                                            builder: (context) =>
-                                                AttendanceMarking(
-                                                    userName:
-                                                        userController
-                                                            .usersDataList[
-                                                                index]
-                                                            .userName,
-                                                    userNumber: userController
+                                            builder: (context) => UserAttendance(
+                                                userID: userController
+                                                    .usersDataList[index]
+                                                    .userID,
+                                                userName: userController
+                                                    .usersDataList[index]
+                                                    .userName,
+                                                userNumber: userController
+                                                    .usersDataList[index]
+                                                    .userNumber,
+                                                trainerName: userController
                                                         .usersDataList[index]
-                                                        .userNumber),
+                                                        .selectedInstructor ??
+                                                    "Not available"),
                                           ),
                                         );
                                       },

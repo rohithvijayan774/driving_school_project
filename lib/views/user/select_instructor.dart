@@ -56,8 +56,8 @@ class ChooseInstructor extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: Consumer<AdminController>(
-                  builder: (context, instructorController, _) {
+              child: Consumer2<AdminController, UserController>(builder:
+                  (context, instructorController, userinstrController, _) {
                 return FutureBuilder(
                     future: instructorController.fetchInstructors(),
                     builder: (context, snapshot) {
@@ -131,7 +131,14 @@ class ChooseInstructor extends StatelessWidget {
                                                 children: [
                                                   Expanded(
                                                     child: TextButton(
-                                                      onPressed: () {},
+                                                      onPressed: () {
+                                                        userinstrController
+                                                            .updateInstructor(
+                                                                instructorController
+                                                                    .instructorsList[
+                                                                        index]
+                                                                    .instructorName);
+                                                      },
                                                       child:
                                                           const Text('Select'),
                                                     ),

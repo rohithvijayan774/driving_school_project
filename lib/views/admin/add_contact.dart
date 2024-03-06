@@ -1,7 +1,9 @@
 import 'package:driving_school/const.dart';
+import 'package:driving_school/controller/admin_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:provider/provider.dart';
 
 class AddContact extends StatelessWidget {
   const AddContact({super.key});
@@ -10,6 +12,8 @@ class AddContact extends StatelessWidget {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+    final addContactController =
+        Provider.of<AdminController>(context, listen: false);
     return Scaffold(
       body: Stack(
         children: [
@@ -51,64 +55,98 @@ class AddContact extends StatelessWidget {
             padding: const EdgeInsets.symmetric(
               horizontal: 30,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Enter details',
-                  style: GoogleFonts.epilogue(fontSize: 18),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                TextFormField(
-                  decoration: InputDecoration(
-                    isDense: true,
-                    hintStyle: GoogleFonts.epilogue(),
-                    hintText: 'Name',
-                    border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        borderSide: BorderSide(color: Colors.grey)),
+            child: Form(
+              key: addContactController.contactAddKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Enter details',
+                    style: GoogleFonts.epilogue(fontSize: 18),
                   ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                TextFormField(
-                  decoration: InputDecoration(
-                    isDense: true,
-                    hintStyle: GoogleFonts.epilogue(),
-                    hintText: 'Phonenumber',
-                    border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        borderSide: BorderSide(color: Colors.grey)),
+                  const SizedBox(
+                    height: 10,
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                SizedBox(
-                  width: width,
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                  TextFormField(
+                    controller: addContactController.contactNameController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return '* this field is required';
+                      } else {
+                        return null;
+                      }
+                    },
+                    decoration: InputDecoration(
+                      isDense: true,
+                      hintStyle: GoogleFonts.epilogue(),
+                      hintText: 'Name',
+                      border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderSide: BorderSide(color: Colors.grey)),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.phone,
+                    controller: addContactController.contactNumberController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return '* this field is required';
+                      } else {
+                        return null;
+                      }
+                    },
+                    decoration: InputDecoration(
+                      isDense: true,
+                      hintStyle: GoogleFonts.epilogue(),
+                      hintText: 'Phonenumber',
+                      border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderSide: BorderSide(color: Colors.grey)),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  SizedBox(
+                    width: width,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
+                        backgroundColor:
+                            const MaterialStatePropertyAll(defaultBlue),
                       ),
-                      backgroundColor:
-                          const MaterialStatePropertyAll(defaultBlue),
+                      onPressed: () {
+                        if (addContactController.contactAddKey.currentState!
+                            .validate()) {
+                          addContactController
+                              .saveContact(
+                                  addContactController
+                                      .contactNameController.text,
+                                  int.parse(addContactController
+                                      .contactNumberController.text))
+                              .then(
+                                (value) => Navigator.of(context).pop(),
+                              );
+                        }
+                      },
+                      child: Text(
+                        'Upload',
+                        style: GoogleFonts.epilogue(
+                            fontSize: 15, color: Colors.white),
+                      ),
                     ),
-                    onPressed: () {},
-                    child: Text(
-                      'Upload',
-                      style: GoogleFonts.epilogue(
-                          fontSize: 15, color: Colors.white),
-                    ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
         ],

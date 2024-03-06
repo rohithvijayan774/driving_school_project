@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:driving_school/models/attendance_model.dart';
+import 'package:driving_school/models/contact_model.dart';
 import 'package:driving_school/models/course_model.dart';
 import 'package:driving_school/models/instructor_model.dart';
 import 'package:driving_school/models/invoice_model.dart';
@@ -11,6 +14,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class AdminController extends ChangeNotifier {
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -267,15 +271,282 @@ class AdminController extends ChangeNotifier {
         String invoiceCourseName = doc['invoiceCourseName'];
         String invoiceDate = doc['invoiceDate'];
         double invoicePrice = doc['invoicePrice'];
+        String dueDate = doc['dueDate'];
 
         invoices = InvoiceModel(
             invoiceID: invoiceID,
             invoiceUserName: invoiceUserName,
             invoiceCourseName: invoiceCourseName,
             invoiceDate: invoiceDate,
-            invoicePrice: invoicePrice);
+            invoicePrice: invoicePrice,
+            dueDate: dueDate);
 
         invoiceList.add(invoices!);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  GlobalKey<FormState> contactAddKey = GlobalKey<FormState>();
+  TextEditingController contactNameController = TextEditingController();
+  TextEditingController contactNumberController = TextEditingController();
+
+  ContactModel? _contactModel;
+  ContactModel get contactModel => _contactModel!;
+
+  String? _contactid;
+  String get contactid => _contactid!;
+
+  Future<void> saveContact(
+    String contactName,
+    int contactNumber,
+  ) async {
+    final contactDoc = firebaseFirestore.collection('contacts').doc();
+    _contactModel = ContactModel(
+        contactID: contactDoc.id,
+        contactName: contactName,
+        contactNumber: contactNumber);
+
+    await contactDoc.set(_contactModel!.toMap());
+
+    _contactid = contactDoc.id;
+    notifyListeners();
+  }
+
+  List<ContactModel> contactsList = [];
+  ContactModel? contacts;
+
+  Future fetchContacts() async {
+    try {
+      contactsList.clear();
+
+      CollectionReference contactCollection =
+          firebaseFirestore.collection('contacts');
+      QuerySnapshot contactSnapshot = await contactCollection.get();
+
+      for (var doc in contactSnapshot.docs) {
+        String contactID = doc['contactID'];
+        String contactName = doc['contactName'];
+        int contactNumber = doc['contactNumber'];
+
+        contacts = ContactModel(
+            contactID: contactID,
+            contactName: contactName,
+            contactNumber: contactNumber);
+
+        contactsList.add(contacts!);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> deleteContact(String contactID, context) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('contacts')
+          .doc(contactID)
+          .delete();
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Contact deleted successfully')));
+      notifyListeners();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete Contact: $e')));
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////
+
+  Map<String, Map<DateTime, List<dynamic>>> userAttendance = {};
+  List attendance = [];
+  // List<Map<String, dynamic>> userAttendance = [];
+  var today = DateTime.now();
+
+  void onDaySelected(
+      DateTime selectedDay, DateTime focusedDay, String userName) async {
+    attendance.clear();
+    String user = userName;
+    today = selectedDay;
+
+    if (!userAttendance.containsKey(user)) {
+      userAttendance[user] = {};
+    }
+
+    if (userAttendance[user]!.containsKey(today)) {
+      userAttendance[user]!.remove(today);
+    } else {
+      userAttendance[user]![today] = [selectedDay];
+    }
+
+    print('////////$user');
+    print('///////////////${userAttendance[user]}');
+
+    // Map<String, dynamic> attendanceData = {};
+    // userAttendance.forEach((key, value) {
+    //   attendanceData[key] = value;
+    // });
+
+    attendance.add(userAttendance[user]);
+
+    await firebaseFirestore
+        .collection('users')
+        .doc(user)
+        .update({'userAttendance': attendance.toString()});
+    print('////////////////Attendance updated////////////////');
+    notifyListeners();
+  }
+
+  fetchAttendance(
+    String userName,
+  ) async {
+    try {
+      DocumentSnapshot userDoc =
+          await firebaseFirestore.collection('users').doc(userName).get();
+
+      // Retrieve userAttendance data from Firestore
+      Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+
+      if (userData != null && userData.containsKey('userAttendance')) {
+        // Parse the userAttendance data from String to List<Map<String, dynamic>>
+        List<Map<String, dynamic>> userAttendanceData =
+            jsonDecode(userData['userAttendance']);
+
+        // Convert the List<Map<String, dynamic>> to the desired map structure
+        Map<DateTime, List<dynamic>> attendanceData = {};
+
+        userAttendanceData.forEach((attendanceMap) {
+          attendanceMap.forEach((key, value) {
+            DateTime dateTimeKey = DateTime.parse(key);
+            attendanceData[dateTimeKey] = List<dynamic>.from(value);
+          });
+        });
+
+        // Update the local userAttendance variable
+        userAttendance[userName] = attendanceData;
+
+        print('User attendance data fetched successfully for $userName');
+        notifyListeners(); // Notify listeners about the updated data
+      } else {
+        print('User attendance data not found for $userName');
+      }
+    } catch (e) {
+      print('Error fetching user attendance data: $e');
+    }
+    // try {
+    //   DocumentSnapshot userDoc =
+    //       await firebaseFirestore.collection('users').doc(userName).get();
+
+    //   // Retrieve userAttendance data from Firestore
+    //   Map<String, dynamic>? userData = userDoc.data() as Map<String, dynamic>?;
+    //   if (userData != null && userData.containsKey('userAttendance')) {
+    //     // Convert the userAttendance data from String to the desired map type
+
+    //     Map<String, dynamic> attendanceData =
+    //         Map<String, dynamic>.from(userData['userAttendance']);
+
+    //     // Update the local userAttendance variable
+    //     userAttendance[userName] = attendanceData.cast<DateTime, List>();
+
+    //     print('User attendance data fetched successfully for $userName');
+    //     notifyListeners(); // Notify listeners about the updated data
+    //   } else {
+    //     print('User attendance data not found for $userName');
+    //   }
+    // } catch (e) {
+    //   print('Error fetching user attendance data: $e');
+    // }
+  }
+
+  TextEditingController attDateController = TextEditingController();
+  TextEditingController attTimeController = TextEditingController();
+  late DateTime selectedDate;
+  final attKey = GlobalKey<FormState>();
+
+  Future<void> selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+
+    if (pickedDate != null) {
+      attDateController.text = DateFormat('dd-MMM-yyyy').format(pickedDate);
+      notifyListeners();
+    }
+  }
+
+  // late TimeOfDay _selectedTime;
+
+  Future<void> selectTime(context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      // _selectedTime = picked;
+      attTimeController.text = picked.format(context);
+      notifyListeners();
+    }
+  }
+
+  AttendanceModel? _attendanceModel;
+  AttendanceModel get attendanceModel => _attendanceModel!;
+
+  Future markAttendance(String attDate, String attTime, String userid,
+      String trainerName, context) async {
+    try {
+      final attRef = firebaseFirestore
+          .collection('users')
+          .doc(userid)
+          .collection('attendance')
+          .doc(attDate);
+      _attendanceModel = AttendanceModel(
+          attID: attDate,
+          attDate: attDate,
+          attTime: attTime,
+          userID: userid,
+          trainerName: trainerName);
+
+      await attRef.set(_attendanceModel!.toMap());
+      Navigator.of(context).pop();
+      attDateController.clear();
+      attTimeController.clear();
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  List<AttendanceModel> attList = [];
+  AttendanceModel? attnds;
+  Future fetchAtt(String userid) async {
+    try {
+      attList.clear();
+
+      CollectionReference attndCollection = firebaseFirestore
+          .collection('users')
+          .doc(userid)
+          .collection('attendance');
+      QuerySnapshot attndSnapshot = await attndCollection.get();
+
+      for (var doc in attndSnapshot.docs) {
+        String attID = doc['attID'];
+        String attDate = doc['attDate'];
+        String attTime = doc['attTime'];
+        String userID = doc['userID'];
+        String trainerName = doc['trainerName'];
+
+        attnds = AttendanceModel(
+            attID: attID,
+            attDate: attDate,
+            attTime: attTime,
+            userID: userID,
+            trainerName: trainerName);
+
+        attList.add(attnds!);
       }
     } catch (e) {
       print(e);

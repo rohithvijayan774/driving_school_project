@@ -6,6 +6,7 @@ class UserModel {
   String? userProPic;
   String? selectedCourse;
   String? selectedInstructor;
+  List? userAttendance;
 
   UserModel({
     required this.userID,
@@ -15,17 +16,20 @@ class UserModel {
     this.userProPic,
     this.selectedCourse,
     this.selectedInstructor,
+    this.userAttendance,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-        userID: map['userID'],
-        userName: map['userName'],
-        userEmail: map['userEmail'],
-        userNumber: map['userNumber'],
-        userProPic: map['userProPic'],
-        selectedCourse: map['selectedCourse'],
-        selectedInstructor: map['selectedInstructor']);
+      userID: map['userID'],
+      userName: map['userName'],
+      userEmail: map['userEmail'],
+      userNumber: map['userNumber'],
+      userProPic: map['userProPic'],
+      selectedCourse: map['selectedCourse'],
+      selectedInstructor: map['selectedInstructor'],
+      userAttendance: map['userAttendance'] ?? [],
+    );
   }
 
   Map<String, dynamic> toMap() {
@@ -37,6 +41,7 @@ class UserModel {
       'userProPic': userProPic,
       'selectedCourse': selectedCourse,
       'selectedInstructor': selectedInstructor,
+      'userAttendance': userAttendance,
     };
   }
 }

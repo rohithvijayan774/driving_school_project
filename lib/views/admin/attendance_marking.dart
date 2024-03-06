@@ -1,3 +1,4 @@
+import 'package:driving_school/controller/admin_controller.dart';
 import 'package:driving_school/controller/user_controller.dart';
 import 'package:driving_school/views/admin/add_course.dart';
 import 'package:flutter/material.dart';
@@ -7,9 +8,11 @@ import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class AttendanceMarking extends StatelessWidget {
+  final String userID;
   final String userName;
   final int userNumber;
   const AttendanceMarking({
+    required this.userID,
     required this.userName,
     required this.userNumber,
     super.key,
@@ -72,47 +75,64 @@ class AttendanceMarking extends StatelessWidget {
                         fontSize: 20, fontWeight: FontWeight.w500),
                   ),
                 ),
-                Consumer<UserController>(
+                Consumer<AdminController>(
                     builder: (context, attendanceController, _) {
-                  return TableCalendar(
-                    eventLoader: (day) {
-                      return attendanceController.userAttendance.entries
-                          .map((entry) => entry.value[day] ?? [])
-                          .expand((event) => event)
-                          .toList();
-                    },
-                    firstDay: DateTime(2000),
-                    lastDay: DateTime(2100),
-                    focusedDay: attendanceController.today,
-                    onDaySelected: (selectedDay, focusedDay) {
-                      attendanceController.onDaySelected(
-                          selectedDay, focusedDay, userName);
-                    },
-                    availableGestures: AvailableGestures.all,
-                    selectedDayPredicate: (day) =>
-                        isSameDay(day, attendanceController.today),
-                  );
-                }),
-                Expanded(child: Consumer<UserController>(
-                    builder: (context, attendanceListController, _) {
-                  return ListView.separated(
-                      itemBuilder: (context, index) {
-                        String userID = attendanceListController
-                            .userAttendance.keys
-                            .elementAt(index);
-                        List<DateTime> userDates = attendanceListController
-                            .userAttendance[userID]!.keys
-                            .toList();
-                        return ListTile(
-                          leading: Text('User : $userID'),
-                          title: Text('Date : $userDates'),
+                  return FutureBuilder(
+                      future: attendanceController.fetchAttendance(userID),
+                      builder: (context, snapshot) {
+                        return TableCalendar(
+                          eventLoader: (day) {
+                            return attendanceController.userAttendance.entries
+                                .map((entry) => entry.value[day] ?? [])
+                                .expand((event) => event)
+                                .toList();
+                          },
+                          firstDay: DateTime(2000),
+                          lastDay: DateTime(2100),
+                          focusedDay: attendanceController.today,
+                          onDaySelected: (selectedDay, focusedDay) {
+                            attendanceController.onDaySelected(
+                                selectedDay, focusedDay, userID);
+
+                            // print(object)
+                          },
+                          availableGestures: AvailableGestures.horizontalSwipe,
+                          selectedDayPredicate: (day) =>
+                              isSameDay(day, attendanceController.today),
                         );
-                      },
-                      separatorBuilder: (context, index) => const SizedBox(
-                            height: 10,
-                          ),
-                      itemCount:
-                          attendanceListController.userAttendance.length);
+                      });
+                }),
+                Expanded(child: Consumer<AdminController>(
+                    builder: (context, attendanceListController, _) {
+                  return attendanceListController.userAttendance.isEmpty
+                      ? const Center(
+                          child: Text('No Attendance'),
+                        )
+                      : ListView.separated(
+                          itemBuilder: (context, index) {
+                            String userAttID = attendanceListController
+                                .userAttendance.keys
+                                .elementAt(index);
+                            List<DateTime> userAttDates =
+                                attendanceListController
+                                    .userAttendance[userID]!.keys
+                                    .toList();
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Card(
+                                child: ListTile(
+                                  leading: Text('User : $userName'),
+                                  title: Text('Date : $userAttDates'),
+                                ),
+                              ),
+                            );
+                          },
+                          separatorBuilder: (context, index) => const SizedBox(
+                                height: 10,
+                              ),
+                          itemCount:
+                              attendanceListController.userAttendance.length);
                 }))
               ],
             ),

@@ -29,7 +29,7 @@ class SplashScreen extends StatelessWidget {
 
     if (splashProvider.firebaseAuth.currentUser != null) {
       if (splashProvider.firebaseAuth.currentUser!.uid ==
-          'GONy6wYAnCXodoTqRIvXqURRNCJ3') {
+          'OZnfVWmZloOvdi9BvIonQohXIa83') {
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => const AdminHome(),

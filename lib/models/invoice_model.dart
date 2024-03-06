@@ -4,6 +4,7 @@ class InvoiceModel {
   String invoiceCourseName;
   String invoiceDate;
   double invoicePrice;
+  String dueDate;
 
   InvoiceModel({
     required this.invoiceID,
@@ -11,15 +12,18 @@ class InvoiceModel {
     required this.invoiceCourseName,
     required this.invoiceDate,
     required this.invoicePrice,
+    required this.dueDate,
   });
 
   factory InvoiceModel.fromMap(Map<String, dynamic> map) {
     return InvoiceModel(
-        invoiceID: map['invoiceID'],
-        invoiceUserName: map['invoiceUserName'],
-        invoiceCourseName: map['invoiceCourseName'],
-        invoiceDate: map['invoiceDate'],
-        invoicePrice: map['invoicePrice'],);
+      invoiceID: map['invoiceID'],
+      invoiceUserName: map['invoiceUserName'],
+      invoiceCourseName: map['invoiceCourseName'],
+      invoiceDate: map['invoiceDate'],
+      invoicePrice: map['invoicePrice'],
+      dueDate: map['dueDate'],
+    );
   }
 
   Map<String, dynamic> toMap() {
@@ -29,6 +33,7 @@ class InvoiceModel {
       'invoiceCourseName': invoiceCourseName,
       'invoiceDate': invoiceDate,
       'invoicePrice': invoicePrice,
+      'dueDate': dueDate,
     };
   }
 }

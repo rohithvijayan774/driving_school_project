@@ -1,6 +1,8 @@
+import 'package:driving_school/controller/admin_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:provider/provider.dart';
 
 class ContactUs extends StatelessWidget {
   const ContactUs({super.key});
@@ -53,47 +55,82 @@ class ContactUs extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: ListView.separated(
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: ListTile(
-                            leading: index % 2 == 0
-                                ? Image.asset('assets/contact_blue.png')
-                                : Image.asset('assets/contact_yellow.png'),
-                            title: SizedBox(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          'Name: ',
-                                          style: GoogleFonts.epilogue(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 15),
-                                        ),
-                                        Expanded(
-                                          child: Text(
-                                            '9876543210',
-                                            overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.fraunces(
-                                                fontSize: 15),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) => const Divider(
-                            thickness: 0.3,
-                          ),
-                      itemCount: 5),
+                  child: Consumer<AdminController>(
+                      builder: (context, contactController, _) {
+                    return FutureBuilder(
+                        future: contactController.fetchContacts(),
+                        builder: (context, snapshot) {
+                          return snapshot.connectionState ==
+                                  ConnectionState.waiting
+                              ? const Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : contactController.contactsList.isEmpty
+                                  ? const Center(
+                                      child: Text('No Contacts Found'),
+                                    )
+                                  : snapshot.hasError
+                                      ? Center(
+                                          child:
+                                              Text(snapshot.error.toString()),
+                                        )
+                                      : ListView.separated(
+                                          itemBuilder: (context, index) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 10),
+                                              child: ListTile(
+                                                leading: index % 2 == 0
+                                                    ? Image.asset(
+                                                        'assets/contact_blue.png')
+                                                    : Image.asset(
+                                                        'assets/contact_yellow.png'),
+                                                title: SizedBox(
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Row(
+                                                          children: [
+                                                            Text(
+                                                              '${contactController.contactsList[index].contactName}: ',
+                                                              style: GoogleFonts
+                                                                  .epilogue(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      fontSize:
+                                                                          15),
+                                                            ),
+                                                            Expanded(
+                                                              child: Text(
+                                                                '${contactController.contactsList[index].contactNumber}',
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style: GoogleFonts
+                                                                    .fraunces(
+                                                                        fontSize:
+                                                                            15),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          separatorBuilder: (context, index) =>
+                                              const Divider(
+                                                thickness: 0.3,
+                                              ),
+                                          itemCount: contactController
+                                              .contactsList.length);
+                        });
+                  }),
                 )
               ],
             ),
